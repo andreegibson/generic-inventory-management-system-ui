@@ -1,18 +1,24 @@
 <template>
   <div class="gims">
     <div class="container">
+
       <h1>{{ msg }}</h1>
       <p>
         An application for managing an inventory database.
       </p>
+
       <div class="container mh-25">
         <h3>Retrieve item(s) from the Item Database</h3>
         <div class="inputs">
-          <label for="getItemName">Item name:</label>
-          <input type="text" id="getItemName" name="getItemName">
-          <button v-on:click="readItem">Lookup Item</button>
+          <input type="text" id="searchCriteria" name="searchCriteria">
+          <b-dropdown variant="primary" text="Search By" class="m-2">
+            <b-dropdown-item v-on:click="readItem('name')">Name</b-dropdown-item>
+            <b-dropdown-item v-on:click="readItem('category')">Category</b-dropdown-item>
+            <b-dropdown-item v-on:click="readItem('type')">Type</b-dropdown-item>
+            <b-dropdown-item v-on:click="readItem('brand')">Brand</b-dropdown-item>
+          </b-dropdown>
         </div>
-        <div class="container overflow-scroll">
+        <div v-if="items && !items.error" class="container overflow-scroll">
           <table class="table table-striped table-bordered">
             <thead>
             <tr>
@@ -36,7 +42,44 @@
             </tbody>
           </table>
         </div>
+        <div v-if="items && items.error">
+          <b-alert show variant="warning">Warning Alert</b-alert>
+        </div>
       </div>
+
+      <!--      <div class="container mh-25">-->
+      <!--        <h3>Add an item to the Item Database</h3>-->
+      <!--        <div class="inputs">-->
+      <!--          <label for="getItemName">Item name:</label>-->
+      <!--          <input type="text" id="getItemName" name="getItemName">-->
+      <!--          <button v-on:click="readItem">Lookup Item</button>-->
+      <!--        </div>-->
+      <!--        <div class="container overflow-scroll">-->
+      <!--          <form class="table table-striped table-bordered">-->
+      <!--            <thead>-->
+      <!--            <tr>-->
+      <!--              <th>ID</th>-->
+      <!--              <th>Name</th>-->
+      <!--              <th>Category</th>-->
+      <!--              <th>Type</th>-->
+      <!--              <th>Brand</th>-->
+      <!--              <th>Description</th>-->
+      <!--            </tr>-->
+      <!--            </thead>-->
+      <!--            <tbody>-->
+      <!--            <tr v-for="item in items" :key="item.id">-->
+      <!--              <td>{{ item.id }}</td>-->
+      <!--              <td>{{ item.name }}</td>-->
+      <!--              <td>{{ item.category }}</td>-->
+      <!--              <td>{{ item.type }}</td>-->
+      <!--              <td>{{ item.brand }}</td>-->
+      <!--              <td>{{ item.description }}</td>-->
+      <!--            </tr>-->
+      <!--            </tbody>-->
+      <!--          </form>-->
+      <!--        </div>-->
+      <!--      </div>-->
+
     </div>
   </div>
 </template>
@@ -50,18 +93,24 @@ export default {
     msg: String,
     items: JSON
   },
+  data() {
+    return {
+      showAlert: false
+    }
+  },
   methods: {
-    readItem: function () {
-      this.getItemResults = 'Loading...';
-      let itemName = document.getElementById('getItemName').value;
+    readItem: function (searchParam) {
+      let searchCriteria = document.getElementById('searchCriteria').value;
       let vm = this;
       axios
-          .get('http://localhost:8081/items/name/' + itemName)
+          .get('http://localhost:8081/items/' + searchParam + '/' + searchCriteria)
           .then(function (response) {
             vm.items = response.data;
+            vm.hasBeenSearched = true;
           })
           .catch(function (error) {
-            vm.status = 'An error occurred' + error;
+            vm.items.error = 'An error occurred' + error;
+            vm.showAlert = true;
           })
     }
   }
