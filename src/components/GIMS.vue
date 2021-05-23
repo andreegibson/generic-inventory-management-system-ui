@@ -88,7 +88,6 @@
 import axios from 'axios';
 
 export default {
-  el: '#GIMS',
   props: {
     msg: String
   },
