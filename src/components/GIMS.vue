@@ -43,7 +43,7 @@
           </table>
         </div>
         <div v-if="items && items.error">
-          <b-alert show variant="warning">Warning Alert</b-alert>
+          <b-alert v-model="showAlert" variant="warning" dismissible>{{ items.error }}</b-alert>
         </div>
       </div>
 
@@ -90,12 +90,12 @@ import axios from 'axios';
 export default {
   el: '#GIMS',
   props: {
-    msg: String,
-    items: JSON
+    msg: String
   },
   data() {
     return {
-      showAlert: false
+      showAlert: false,
+      items: null
     }
   },
   methods: {
@@ -106,7 +106,12 @@ export default {
           .get('http://localhost:8081/items/' + searchParam + '/' + searchCriteria)
           .then(function (response) {
             vm.items = response.data;
-            vm.hasBeenSearched = true;
+            if (vm.items.length === 0) {
+              vm.items.error = 'No items found with ' + searchParam + ' ' + searchCriteria + '.';
+              vm.showAlert = true;
+              return;
+            }
+            vm.showAlert = false;
           })
           .catch(function (error) {
             vm.items.error = 'An error occurred' + error;
