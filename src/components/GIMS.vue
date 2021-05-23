@@ -100,21 +100,19 @@ export default {
   methods: {
     readItem: function (searchParam) {
       let searchCriteria = document.getElementById('searchCriteria').value;
-      let vm = this;
       axios
           .get('http://localhost:8081/items/' + searchParam + '/' + searchCriteria)
           .then(function (response) {
-            vm.items = response.data;
-            if (vm.items.length === 0) {
-              vm.items.error = 'No items found with ' + searchParam + ' ' + searchCriteria + '.';
-              vm.showAlert = true;
-              return;
+            this.items = response.data;
+            this.showAlert = false;
+            if (this.items.length === 0) {
+              this.items.error = 'No items found with ' + searchParam + ' ' + searchCriteria + '.';
+              this.showAlert = true;
             }
-            vm.showAlert = false;
           })
           .catch(function (error) {
-            vm.items.error = 'An error occurred' + error;
-            vm.showAlert = true;
+            this.items.error = 'An error occurred' + error;
+            this.showAlert = true;
           })
     }
   }
