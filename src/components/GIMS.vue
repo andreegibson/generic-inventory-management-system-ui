@@ -47,38 +47,40 @@
         </div>
       </div>
 
-      <!--      <div class="container mh-25">-->
-      <!--        <h3>Add an item to the Item Database</h3>-->
-      <!--        <div class="inputs">-->
-      <!--          <label for="getItemName">Item name:</label>-->
-      <!--          <input type="text" id="getItemName" name="getItemName">-->
-      <!--          <button v-on:click="readItem">Lookup Item</button>-->
-      <!--        </div>-->
-      <!--        <div class="container overflow-scroll">-->
-      <!--          <form class="table table-striped table-bordered">-->
-      <!--            <thead>-->
-      <!--            <tr>-->
-      <!--              <th>ID</th>-->
-      <!--              <th>Name</th>-->
-      <!--              <th>Category</th>-->
-      <!--              <th>Type</th>-->
-      <!--              <th>Brand</th>-->
-      <!--              <th>Description</th>-->
-      <!--            </tr>-->
-      <!--            </thead>-->
-      <!--            <tbody>-->
-      <!--            <tr v-for="item in items" :key="item.id">-->
-      <!--              <td>{{ item.id }}</td>-->
-      <!--              <td>{{ item.name }}</td>-->
-      <!--              <td>{{ item.category }}</td>-->
-      <!--              <td>{{ item.type }}</td>-->
-      <!--              <td>{{ item.brand }}</td>-->
-      <!--              <td>{{ item.description }}</td>-->
-      <!--            </tr>-->
-      <!--            </tbody>-->
-      <!--          </form>-->
-      <!--        </div>-->
-      <!--      </div>-->
+      <div class="container mh-25">
+        <h3>Add an item to the Item Database</h3>
+        <div class="inputs">
+          <label for="newItemName"/>
+          <input type="text" id="newItemName" name="newItemName">
+        </div>
+        <!--        <div v-if="items && !items.error" class="container overflow-scroll">-->
+        <!--          <table class="table table-striped table-bordered">-->
+        <!--            <thead>-->
+        <!--            <tr>-->
+        <!--              <th>ID</th>-->
+        <!--              <th>Name</th>-->
+        <!--              <th>Category</th>-->
+        <!--              <th>Type</th>-->
+        <!--              <th>Brand</th>-->
+        <!--              <th>Description</th>-->
+        <!--            </tr>-->
+        <!--            </thead>-->
+        <!--            <tbody>-->
+        <!--            <tr v-for="item in items" :key="item.id">-->
+        <!--              <td>{{ item.id }}</td>-->
+        <!--              <td>{{ item.name }}</td>-->
+        <!--              <td>{{ item.category }}</td>-->
+        <!--              <td>{{ item.type }}</td>-->
+        <!--              <td>{{ item.brand }}</td>-->
+        <!--              <td>{{ item.description }}</td>-->
+        <!--            </tr>-->
+        <!--            </tbody>-->
+        <!--          </table>-->
+        <!--        </div>-->
+        <!--        <div v-if="items && items.error">-->
+        <!--          <b-alert v-model="showAlert" variant="warning" dismissible>{{ items.error }}</b-alert>-->
+        <!--        </div>-->
+      </div>
 
     </div>
   </div>
@@ -100,19 +102,20 @@ export default {
   methods: {
     readItem: function (searchParam) {
       let searchCriteria = document.getElementById('searchCriteria').value;
+      let vm = this;
       axios
           .get('http://localhost:8081/items/' + searchParam + '/' + searchCriteria)
           .then(function (response) {
-            this.items = response.data;
-            this.showAlert = false;
-            if (this.items.length === 0) {
-              this.items.error = 'No items found with ' + searchParam + ' ' + searchCriteria + '.';
-              this.showAlert = true;
+            vm.items = response.data;
+            vm.showAlert = false;
+            if (vm.items.length === 0) {
+              vm.items.error = 'No items found with ' + searchParam + ' ' + searchCriteria + '.';
+              vm.showAlert = true;
             }
           })
           .catch(function (error) {
-            this.items.error = 'An error occurred' + error;
-            this.showAlert = true;
+            vm.items.error = 'An error occurred' + error;
+            vm.showAlert = true;
           })
     }
   }
